@@ -64,7 +64,11 @@ const InvoiceForm = ({
 
   const onSubmit = async (data: InvoiceFormData) => {
     try {
-      await createInvoice({ variables: { input: data } });
+      await createInvoice({
+        variables: {
+          input: { ...data, totalAmount: calculateTotal(data.items) },
+        },
+      });
       alert("Invoice created successfully!");
       reset();
     } catch (error) {
@@ -80,6 +84,10 @@ const InvoiceForm = ({
     onFormChange(watchedFormData);
   }, [watchedFormData, onFormChange]);
 
+  const calculateTotal = (items: { quantity: number; price: number }[]) => {
+    return items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  };
+  
   return (
     <Card sx={{ maxWidth: 800, margin: "auto", mt: 4, boxShadow: 3 }}>
       <CardContent>
